@@ -7,6 +7,7 @@ import (
 
 	oldcmds "github.com/ipfs/go-ipfs/commands"
 	lgc "github.com/ipfs/go-ipfs/commands/legacy"
+	core "github.com/ipfs/go-ipfs/core"
 	dag "github.com/ipfs/go-ipfs/core/commands/dag"
 	e "github.com/ipfs/go-ipfs/core/commands/e"
 	name "github.com/ipfs/go-ipfs/core/commands/name"
@@ -16,6 +17,7 @@ import (
 	"gx/ipfs/QmPTfgFTo9PFr1PvPKyKoeMgBvYPh6cX3aDP7DHKVbnCbi/go-ipfs-cmds"
 	logging "gx/ipfs/QmRREK2CAZ5Re2Bd9zZFG6FeYDppUWt5cMgsoUEp3ktgSr/go-log"
 	"gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit"
+	mbase "gx/ipfs/QmekxXDhCxCJRNuzmHreuaT3BsuJcsjcXWNrtV9C8DRHtd/go-multibase"
 )
 
 var log = logging.Logger("core/commands")
@@ -23,7 +25,9 @@ var log = logging.Logger("core/commands")
 var ErrNotOnline = errors.New("this command must be run in online mode. Try running 'ipfs daemon' first")
 
 const (
-	ApiOption = "api"
+	ApiOption          = "api"
+	CidBaseOption      = "cid-base"
+	UpgradeCidV0Option = "upgrade-cidv0"
 )
 
 var Root = &cmds.Command{
@@ -95,6 +99,8 @@ The CLI will exit with one of the following values:
 		cmdkit.BoolOption("h", "Show a short version of the command help text."),
 		cmdkit.BoolOption("local", "L", "Run the command locally, instead of using the daemon."),
 		cmdkit.StringOption(ApiOption, "Use a specific API instance (defaults to /ip4/127.0.0.1/tcp/5001)"),
+		cmdkit.StringOption(CidBaseOption, "mbase", "Multi-base to use to encode version 1 CIDs in output."),
+		cmdkit.BoolOption(UpgradeCidV0Option, "Upgrade CID version 0 to version 1 in output."),
 
 		// global options, added to every command
 		cmds.OptionEncodingType,
@@ -221,4 +227,36 @@ func MessageTextMarshaler(res oldcmds.Response) (io.Reader, error) {
 	}
 
 	return strings.NewReader(out.Message), nil
+}
+
+func handleCidBase(base string, upgrade bool, upgradeDefined bool) error {
+	enc := core.DefaultCidEncoder
+
+	if base != "" {
+		var err error
+		enc.Base, err = mbase.EncoderByName(base)
+		if err != nil {
+			return err
+		}
+	}
+
+	enc.Upgrade = upgrade
+	if base != "" && !upgradeDefined {
+		enc.Upgrade = true
+	}
+
+	core.DefaultCidEncoder = enc
+	return nil
+}
+
+func HandleCidBase(req *cmds.Request) error {
+	base, _ := req.Options[CidBaseOption].(string)
+	upgrade, defined := req.Options[UpgradeCidV0Option].(bool)
+	return handleCidBase(base, upgrade, defined)
+}
+
+func HandleCidBaseLegacy(req oldcmds.Request) error {
+	base, _, _ := req.Option(CidBaseOption).String()
+	upgrade, defined, _ := req.Option(UpgradeCidV0Option).Bool()
+	return handleCidBase(base, upgrade, defined)
 }

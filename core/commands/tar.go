@@ -62,12 +62,17 @@ represent it.
 		fi.FileName()
 		res.SetOutput(&coreunix.AddedObject{
 			Name: fi.FileName(),
-			Hash: c.String(),
+			Hash: core.FromCid(c),
 		})
 	},
 	Type: coreunix.AddedObject{},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
+			err := HandleCidBaseLegacy(res.Request())
+			if err != nil {
+				return nil, err
+			}
+
 			v, err := unwrapOutput(res.Output())
 			if err != nil {
 				return nil, err
@@ -77,7 +82,7 @@ represent it.
 			if !ok {
 				return nil, e.TypeErr(o, v)
 			}
-			return strings.NewReader(o.Hash + "\n"), nil
+			return strings.NewReader(o.Hash.String() + "\n"), nil
 		},
 	},
 }

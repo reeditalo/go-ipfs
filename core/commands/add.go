@@ -390,6 +390,12 @@ You can now check what blocks have been created by:
 				log.Warning("cannot determine size of input file")
 			}
 
+			err := HandleCidBase(req)
+			if err != nil {
+				re.SetError(err, cmdkit.ErrNormal)
+				return re
+			}
+
 			progressBar := func(wait chan struct{}) {
 				defer close(wait)
 
@@ -425,8 +431,9 @@ You can now check what blocks have been created by:
 							break LOOP
 						}
 						output := out.(*coreunix.AddedObject)
-						if len(output.Hash) > 0 {
-							lastHash = output.Hash
+						hash := output.Hash.String()
+						if len(hash) > 0 {
+							lastHash = hash
 							if quieter {
 								continue
 							}
@@ -436,9 +443,9 @@ You can now check what blocks have been created by:
 								fmt.Fprintf(os.Stderr, "\033[2K\r")
 							}
 							if quiet {
-								fmt.Fprintf(os.Stdout, "%s\n", output.Hash)
+								fmt.Fprintf(os.Stdout, "%s\n", hash)
 							} else {
-								fmt.Fprintf(os.Stdout, "added %s %s\n", output.Hash, output.Name)
+								fmt.Fprintf(os.Stdout, "added %s %s\n", hash, output.Name)
 							}
 
 						} else {

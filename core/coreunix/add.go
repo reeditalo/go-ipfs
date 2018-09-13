@@ -41,16 +41,16 @@ type Link struct {
 }
 
 type Object struct {
-	Hash  string
+	Hash  core.APICid
 	Links []Link
 	Size  string
 }
 
 type AddedObject struct {
 	Name  string
-	Hash  string `json:",omitempty"`
-	Bytes int64  `json:",omitempty"`
-	Size  string `json:",omitempty"`
+	Hash  core.APICid `json:",omitempty"`
+	Bytes int64       `json:",omitempty"`
+	Size  string      `json:",omitempty"`
 }
 
 // NewAdder Returns a new Adder used for a file add operation.
@@ -564,7 +564,7 @@ func getOutput(dagnode ipld.Node) (*Object, error) {
 	}
 
 	output := &Object{
-		Hash:  c.String(),
+		Hash:  core.FromCid(c),
 		Size:  strconv.FormatUint(s, 10),
 		Links: make([]Link, len(dagnode.Links())),
 	}

@@ -24,9 +24,10 @@ import (
 )
 
 type LsLink struct {
-	Name, Hash string
-	Size       uint64
-	Type       unixfspb.Data_DataType
+	Name string
+	Hash core.APICid
+	Size uint64
+	Type unixfspb.Data_DataType
 }
 
 type LsObject struct {
@@ -160,7 +161,7 @@ The JSON output contains type information.
 				}
 				output[i].Links[j] = LsLink{
 					Name: link.Name,
-					Hash: link.Cid.String(),
+					Hash: core.FromCid(link.Cid),
 					Size: link.Size,
 					Type: t,
 				}
@@ -171,6 +172,10 @@ The JSON output contains type information.
 	},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
+			err := HandleCidBaseLegacy(res.Request())
+			if err != nil {
+				return nil, err
+			}
 
 			v, err := unwrapOutput(res.Output())
 			if err != nil {
