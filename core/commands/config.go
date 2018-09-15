@@ -18,6 +18,7 @@ import (
 
 	"gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit"
 	config "gx/ipfs/QmYVqYJTVjetcf1guieEgWpK1PZtHPytP624vKzTF1P3r2/go-ipfs-config"
+	cfgserialize "gx/ipfs/QmYVqYJTVjetcf1guieEgWpK1PZtHPytP624vKzTF1P3r2/go-ipfs-config/serialize"
 )
 
 type ConfigField struct {
@@ -129,7 +130,7 @@ Set the value of the 'Datastore.Path' key:
 				return nil, e.TypeErr(vf, v)
 			}
 
-			buf, err := config.HumanOutput(vf.Value)
+			buf, err := cfgserialize.HumanOutput(vf.Value)
 			if err != nil {
 				return nil, err
 			}
@@ -198,7 +199,7 @@ NOTE: For security reasons, this command will omit your private key. If you woul
 				return nil, e.TypeErr(cfg, v)
 			}
 
-			buf, err := config.HumanOutput(cfg)
+			buf, err := cfgserialize.HumanOutput(cfg)
 			if err != nil {
 				return nil, err
 			}

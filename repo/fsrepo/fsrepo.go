@@ -218,7 +218,8 @@ func ConfigAt(repoPath string) (*config.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return serialize.Load(configFilename)
+	cfg := &config.Config{}
+	return cfg, serialize.Load(configFilename, cfg)
 }
 
 // configIsInitialized returns true if the repo is initialized at
@@ -375,11 +376,11 @@ func (r *FSRepo) openConfig() error {
 	if err != nil {
 		return err
 	}
-	conf, err := serialize.Load(configFilename)
-	if err != nil {
+	cfg := &config.Config{}
+	if err = serialize.Load(configFilename, cfg); err != nil {
 		return err
 	}
-	r.config = conf
+	r.config = cfg
 	return nil
 }
 
