@@ -14,6 +14,7 @@ import (
 	pin "github.com/ipfs/go-ipfs/pin"
 	uio "gx/ipfs/QmPL8bYtbACcSFFiSr4s2du7Na382NxRADR8hC7D9FkEA2/go-unixfs/io"
 
+	apicid "gx/ipfs/QmNWQygwYxgz3QzXG2ytTkrHkZ4HnnSh94ASox3JjktFcR/go-cidutil/apicid"
 	cid "gx/ipfs/QmPSQnBKM9g7BaUcZCvswUJVscQ1ipjmwxN5PXCjkp9EQ7/go-cid"
 	"gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit"
 	"gx/ipfs/QmVkMRSkXrpjqrroEXWuYBvDBnXCdMMY6gsKicBGVGUqKT/go-verifcid"
@@ -39,11 +40,11 @@ var PinCmd = &cmds.Command{
 }
 
 type PinOutput struct {
-	Pins []core.APICid
+	Pins []apicid.Hash
 }
 
 type AddPinOutput struct {
-	Pins     []core.APICid
+	Pins     []apicid.Hash
 	Progress int `json:",omitempty"`
 }
 
@@ -130,7 +131,7 @@ var addPinCmd = &cmds.Command{
 	},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
-			err := HandleCidBaseLegacy(res.Request())
+			_, err := NewCidBaseHandlerLegacy(res.Request()).UseGlobal().Proc()
 			if err != nil {
 				return nil, err
 			}
@@ -139,7 +140,7 @@ var addPinCmd = &cmds.Command{
 				return nil, err
 			}
 
-			var added []core.APICid
+			var added []apicid.Hash
 
 			switch out := v.(type) {
 			case *AddPinOutput:
@@ -214,10 +215,11 @@ collected if needed. (By default, recursively. Use -r=false for direct pins.)
 	},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
-			err := HandleCidBaseLegacy(res.Request())
+			_, err := NewCidBaseHandlerLegacy(res.Request()).UseGlobal().Proc()
 			if err != nil {
 				return nil, err
 			}
+
 			v, err := unwrapOutput(res.Output())
 			if err != nil {
 				return nil, err
@@ -326,10 +328,6 @@ Example:
 	Type: RefKeyList{},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
-			err := HandleCidBaseLegacy(res.Request())
-			if err != nil {
-				return nil, err
-			}
 			v, err := unwrapOutput(res.Output())
 			if err != nil {
 				return nil, err
@@ -696,10 +694,10 @@ func (r PinVerifyRes) Format(out io.Writer) {
 	}
 }
 
-func toAPICids(cs []cid.Cid) []core.APICid {
-	out := make([]core.APICid, 0, len(cs))
+func toAPICids(cs []cid.Cid) []apicid.Hash {
+	out := make([]apicid.Hash, 0, len(cs))
 	for _, c := range cs {
-		out = append(out, core.FromCid(c))
+		out = append(out, apicid.FromCid(c))
 	}
 	return out
 }

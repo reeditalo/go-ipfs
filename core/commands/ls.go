@@ -17,6 +17,7 @@ import (
 	merkledag "gx/ipfs/QmXv5mwmQ74r4aiHcNeQ4GAmfB3aWJuqaE4WyDfDfvkgLM/go-merkledag"
 	blockservice "gx/ipfs/Qma2KhbQarYTkmSJAeaMGRAg8HAXAhEWK8ge4SReG7ZSD3/go-blockservice"
 
+	apicid "gx/ipfs/QmNWQygwYxgz3QzXG2ytTkrHkZ4HnnSh94ASox3JjktFcR/go-cidutil/apicid"
 	cid "gx/ipfs/QmPSQnBKM9g7BaUcZCvswUJVscQ1ipjmwxN5PXCjkp9EQ7/go-cid"
 	"gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit"
 	offline "gx/ipfs/QmcRC35JF2pJQneAxa5LdQBQRumWggccWErogSrCkS1h8T/go-ipfs-exchange-offline"
@@ -25,7 +26,7 @@ import (
 
 type LsLink struct {
 	Name string
-	Hash core.APICid
+	Hash apicid.Hash
 	Size uint64
 	Type unixfspb.Data_DataType
 }
@@ -161,7 +162,7 @@ The JSON output contains type information.
 				}
 				output[i].Links[j] = LsLink{
 					Name: link.Name,
-					Hash: core.FromCid(link.Cid),
+					Hash: apicid.FromCid(link.Cid),
 					Size: link.Size,
 					Type: t,
 				}
@@ -172,7 +173,7 @@ The JSON output contains type information.
 	},
 	Marshalers: cmds.MarshalerMap{
 		cmds.Text: func(res cmds.Response) (io.Reader, error) {
-			err := HandleCidBaseLegacy(res.Request())
+			_, err := NewCidBaseHandlerLegacy(res.Request()).UseGlobal().Proc()
 			if err != nil {
 				return nil, err
 			}

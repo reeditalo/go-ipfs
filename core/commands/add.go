@@ -16,10 +16,10 @@ import (
 	dagtest "gx/ipfs/QmXv5mwmQ74r4aiHcNeQ4GAmfB3aWJuqaE4WyDfDfvkgLM/go-merkledag/test"
 	blockservice "gx/ipfs/Qma2KhbQarYTkmSJAeaMGRAg8HAXAhEWK8ge4SReG7ZSD3/go-blockservice"
 
+	cidutil "gx/ipfs/QmNWQygwYxgz3QzXG2ytTkrHkZ4HnnSh94ASox3JjktFcR/go-cidutil"
 	cmds "gx/ipfs/QmPTfgFTo9PFr1PvPKyKoeMgBvYPh6cX3aDP7DHKVbnCbi/go-ipfs-cmds"
 	mh "gx/ipfs/QmPnFwZ2JXKnXgMw8CdBPxn7FWh6LLdjUjxV1fKHuJnkr8/go-multihash"
 	pb "gx/ipfs/QmPtj12fdwuAqj9sBSTNUxBNu8kCGNp8b3o8yUzMm5GHpq/pb"
-	cidutil "gx/ipfs/QmQJSeE3CX4zos9qeaG8EhecEK9zvrTEfTG84J8C5NVRwt/go-cidutil"
 	mfs "gx/ipfs/QmRkrpnhZqDxTxwGCsDbuZMr7uCFZHH6SGfrcjgEQwxF3t/go-mfs"
 	cmdkit "gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit"
 	files "gx/ipfs/QmSP88ryZkHSRn1fnngAaV2Vcn63WUJzAavnRM9CVdU1Ky/go-ipfs-cmdkit/files"
@@ -390,7 +390,7 @@ You can now check what blocks have been created by:
 				log.Warning("cannot determine size of input file")
 			}
 
-			err := HandleCidBase(req)
+			_, err := NewCidBaseHandler(req).UseGlobal().Proc()
 			if err != nil {
 				re.SetError(err, cmdkit.ErrNormal)
 				return re

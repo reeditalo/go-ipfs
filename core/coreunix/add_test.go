@@ -14,6 +14,7 @@ import (
 	"github.com/ipfs/go-ipfs/pin/gc"
 	"github.com/ipfs/go-ipfs/repo"
 
+	apicid "gx/ipfs/QmNWQygwYxgz3QzXG2ytTkrHkZ4HnnSh94ASox3JjktFcR/go-cidutil/apicid"
 	pi "gx/ipfs/QmPG32VXR5jmpo9q8R9FNdR4Ae97Ky9CiZE6SctJLUB79H/go-ipfs-posinfo"
 	cid "gx/ipfs/QmPSQnBKM9g7BaUcZCvswUJVscQ1ipjmwxN5PXCjkp9EQ7/go-cid"
 	blocks "gx/ipfs/QmRcHuYzAyswytBuMF78rj3LTChYszomRFXNg4685ZN1WM/go-block-format"
@@ -93,7 +94,7 @@ func TestAddGCLive(t *testing.T) {
 
 	}()
 
-	addedHashes := make(map[core.APICid]struct{})
+	addedHashes := make(map[apicid.Hash]struct{})
 	select {
 	case o := <-out:
 		addedHashes[o.(*AddedObject).Hash] = struct{}{}
@@ -132,7 +133,7 @@ func TestAddGCLive(t *testing.T) {
 		if r.Error != nil {
 			t.Fatal(err)
 		}
-		if _, ok := addedHashes[core.FromCid(r.KeyRemoved)]; ok {
+		if _, ok := addedHashes[apicid.FromCid(r.KeyRemoved)]; ok {
 			t.Fatal("gc'ed a hash we just added")
 		}
 	}
