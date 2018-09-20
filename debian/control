@@ -1,0 +1,32 @@
+Source: go-ipfs
+Section: devel
+Priority: optional
+Maintainer: Debian Go Packaging Team <team+pkg-go@tracker.debian.org>
+Uploaders: Niv Sardi <xaiki@debian.org>
+Build-Depends: debhelper (>= 11),
+               dh-golang,
+               golang-any
+Standards-Version: 4.2.1
+Homepage: https://github.com/ipfs/go-ipfs
+Vcs-Browser: https://salsa.debian.org/go-team/packages/go-ipfs
+Vcs-Git: https://salsa.debian.org/go-team/packages/go-ipfs.git
+XS-Go-Import-Path: github.com/ipfs/go-ipfs
+Testsuite: autopkgtest-pkg-go
+
+Package: go-ipfs
+Architecture: any
+Built-Using: ${misc:Built-Using}
+Depends: ${misc:Depends},
+         ${shlibs:Depends}
+Description: IPFS implementation in Go
+ Ipfs is a global, versioned, peer-to-peer filesystem. It combines good
+ ideas from Git, BitTorrent, Kademlia, SFS, and the Web. It is like a
+ single bittorrent swarm, exchanging git objects. IPFS provides an
+ interface as simple as the HTTP web, but with permanence built in. You
+ can also mount the world at /ipfs.
+ .
+ IPFS is fundamentally a set of protocols for communicating about a
+ distributed system of files, but those protocols are informed by reference
+ implementations in both Go and JavaScript.
+ .
+ This is IPFS' go implementation.

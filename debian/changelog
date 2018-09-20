@@ -1,0 +1,5 @@
+go-ipfs (0.4.17+git20180914.996281702-1) UNRELEASED; urgency=medium
+
+  * Initial release (Closes: TODO)
+
+ -- Niv Sardi <xaiki@debian.org>  Mon, 17 Sep 2018 17:17:02 -0300
